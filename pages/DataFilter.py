@@ -27,11 +27,22 @@ with st.sidebar:
     if upload is not None:
         df = load_data(upload)
         
+        # Predefined filter options
+        predefined_tactics = ["Defense Evasion", "Privilege Escalation", "Initial Access", "Execution", "Persistence"]
+        predefined_platforms = ["Windows", "Linux", "macOS", "AWS", "GCP", "Azure"]
+        predefined_data_source = ["Network Traffic", "Process Logs", "File Monitoring", "Command-line Activity"]
+        predefined_permissions = ["Administrator", "User", "root", "System"]
+
         st.subheader("Filters")
         name_filter = st.text_input("Name contains", "")
-        domain_filter = st.multiselect("Domain", options=df["domain"].unique())
-        platforms_filter = st.multiselect("Platforms", options=df["platforms"].unique())
-        tactics_filter = st.multiselect("Tactics", options=df["tactics"].unique())
+        # Predefined Tactics filter
+        tactics_filter = st.multiselect("Tactics", options=predefined_tactics)
+        # Predefined Platforms filter
+        platforms_filter = st.multiselect("Platforms", options=predefined_platforms)
+        # Predefined Data Source filter
+        data_source_filter = st.multiselect("Data Source", options=predefined_data_source)
+        # Predefined Permissions Required filter
+        permissions_filter = st.multiselect("Permissions Required", options=predefined_permissions)
 
 if upload is None:
     st.info("Upload a file through the sidebar.")
@@ -45,14 +56,17 @@ df_filtered = df.copy()
 if name_filter:
     df_filtered = df_filtered[df_filtered["name"].str.contains(name_filter, case=False)]
 
-if domain_filter:
-    df_filtered = df_filtered[df_filtered["domain"].isin(domain_filter)]
+if tactics_filter:
+    df_filtered = df_filtered[df_filtered["tactics"].isin(tactics_filter)]
 
 if platforms_filter:
     df_filtered = df_filtered[df_filtered["platforms"].isin(platforms_filter)]
 
-if tactics_filter:
-    df_filtered = df_filtered[df_filtered["tactics"].isin(tactics_filter)]
+if data_source_filter:
+    df_filtered = df_filtered[df_filtered["data source"].isin(data_source_filter)]
+
+if permissions_filter:
+    df_filtered = df_filtered[df_filtered["permissions required"].isin(permissions_filter)]
 
 with st.expander("Data Preview"):
     st.dataframe(df_filtered)
